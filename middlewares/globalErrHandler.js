@@ -1,10 +1,12 @@
-export const globalErrhandler = (err,req,res,next) => {
+export const globalErrHandler = (err,req,res,next) => {
     //stack
     //message
 
     const stack = err?.stack;
     const message = err?.message;
-    res.json({
+    const statusCode = err?.statusCode ? err?.statusCode:500;
+
+    res.status(statusCode).json({
         stack,
         message
     })
