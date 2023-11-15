@@ -142,6 +142,10 @@ export const updateProductCtrl = asyncHandler(async(req,res)=>{
     })
 });
 
+// @desc delete product
+// @route DELETE /api/products/:id/delete
+// @access Private/Admin
+
 export const deleteProductCtrl = asyncHandler(async(req,res)=>{
     await Product.findByIdAndDelete(req.params.id);
     res.json({
