@@ -1,12 +1,17 @@
+import dotenv from "dotenv";
+dotenv.config()
 import asyncHandler from "express-async-handler";
 import Order from "../model/Order.js"
 import Product from "../model/Products.js";
 import User from "../model/User.js";
+import Stripe from "stripe";
 
 // @desc create orders
 // @route POST /api/v1/orders
 // @access private
 
+//stripe
+const stripe = new Stripe(process.env.STRIPE_KEY);
 export const createOrderCtrl = asyncHandler(async(req,res)=>{
     //Get the payload
     const {orderItems, shippingAddress, totalPrice} = req.body;
@@ -23,7 +28,6 @@ export const createOrderCtrl = asyncHandler(async(req,res)=>{
         shippingAddress,
         totalPrice
     });
-    console.log(order)
     //push order into user
     user.orders.push(order?._id);
     await user.save();
@@ -38,10 +42,30 @@ export const createOrderCtrl = asyncHandler(async(req,res)=>{
         }
         await product.save()
     })
-    res.json({
-        success:true,
-        message:"Order created",
-        order,
-        user
+    // make payment (stripe)
+    const session = await stripe.checkout.sessions.create({
+        line_items:[
+            {
+                price_data:{
+                    currency:"inr",
+                    product_data:{
+                        name:"Hats",
+                        description:"Best hat"
+                    },
+                    unit_amount: 10 * 100,
+                },
+                quantity:2
+            }
+        ],
+        mode:"payment",
+        success_url:"http://localhost:3000/success",
+        cancel_url:"http://localhost:3000/cancel"
     })
+    res.send({url:session.url})
+    // res.json({
+    //     success:true,
+    //     message:"Order created",
+    //     order,
+    //     user
+    // })
 })
