@@ -8,7 +8,7 @@ import Brand from "../model/Brands.js";
 // @access Private/Admin
 
 export const createProductCtrl = asyncHandler(async (req, res) => {
-    const { name, description, category, sizes, colors, user, price, totalQty, brand } =
+    const { name, description, category, sizes, colors, price, totalQty, brand } =
         req.body;
     // product exists
     const productExists = await Product.findOne({ name });
