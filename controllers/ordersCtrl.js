@@ -69,3 +69,54 @@ export const createOrderCtrl = asyncHandler(async(req,res)=>{
     })
     res.send({url:session.url})
 })
+
+// @desc get all orders
+// @route GET /api/v1/orders
+// @access private
+export const getAllOrdersCtrl = asyncHandler(async(req,res)=>{
+    //find all orders
+    const orders = await Order.find()
+    res.json({
+        success: true,
+        message: "All orders",
+        orders
+    })
+})
+
+// @desc get single order
+// @route GET /api/v1/orders/:id
+// @access private
+export const getSingleOrderCtrl = asyncHandler(async(req,res)=>{
+    // get the id from params
+    const id = req.params.id;
+    const order = await Order.findById(id)
+    //send response
+    res.status(200).json({
+        success:true,
+        message:"Single order",
+        order
+    })
+})
+
+// @desc update order status
+// @route PUT /api/v1/orders/update/:id
+// @access private/admin
+export const updateOrderCtrl = asyncHandler(async(req,res)=>{
+    // get the id from params
+    const id = req.params.id;
+    // update
+    const updateOrder = await Order.findByIdAndUpdate(
+        id,
+        {
+            status:req.body.status
+        },
+        {
+            new: true
+        }
+    );
+    res.status(200).json({
+        success:true,
+        message:"Order Updated",
+        updateOrder
+    })
+})
